@@ -122,17 +122,18 @@ def UCS(matrix, start, end):
     # TODO:  
     path = []
     visited = {}
-    visitedTemp = [] # Mảng này có tác dụng lưu trữ tạm thời các giá trị đang lấy trong frontier ra
+    visitedTemp = {} # Mảng này có tác dụng lưu trữ tạm thời các giá trị đang lấy trong frontier ra
     matrix  = np.array(matrix)
     #Mục tiêu kiếm đường đi với chi phí nhỏ nhất
     frontier = [] # Ta sẽ cài đặt list này như là một priority queue
     currentNodePathCost = 0
-    frontier.append((0,start)) #Do yêu cầu của bài toán là lấy đường đi nhỏ nhất trong các đường đi nên chúng ta sẽ lấy path-cost là độ ưu tiên
+    frontier.append((start,0)) #Do yêu cầu của bài toán là lấy đường đi nhỏ nhất trong các đường đi nên chúng ta sẽ lấy path-cost là độ ưu tiên
+    visited[start] = None
     visitedTemp[start] = start
     while frontier:
         # Xử lý để lấy được 2 giá trị path-cost và node
         tupleGet = frontier.pop() #Lấy đồng thời 2 giá trị node và path-cost
-        (currentNodePathCost, currentNode) = tupleGet
+        (currentNode, currentNodePathCost) = tupleGet
         if currentNode == end:
             break
         for i in range(len(matrix[currentNode])):
@@ -141,16 +142,14 @@ def UCS(matrix, start, end):
             if neighborNodePathCost != 0:
                 if i in visited or i in frontier:# Nếu i đã được duyệt thì tiến hành kiểm tra và cập nhật đỉnh có giá trị nhỏ hơn
                     # Nếu path-cost nhỏ hơn path cost trước thì tiến hành cập nhật
-                    if i in frontier and frontier[0][i] > weight:
+                    if i in frontier and frontier[i][1] > weight:
                         visitedTemp[i] = currentNode
                     if i in visited:
                         visited[i] = currentNode
-                        frontier[i] = weight
+                        frontier[i][1] = weight
                 else: #Còn không thì gắn vào mảnh tạm và tiếp tục duyệt
                     visitedTemp[i] = currentNode
-                    frontier[i] = weight
-
-                    
+                    frontier[i][1] = weight
 
     if end in visited:
         while end != start:
